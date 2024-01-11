@@ -1,3 +1,17 @@
+**Repaso trabajo con markdown directamente en visual studio code (vs)**  NO BORRAR
+En vs pincho y abro el fichero de texto ¨Memoria.md" y abajo a la dcha observo que lo trata como un document text, por tanto tengo que cambiarlo a formato Markdown y ahora observo que en el memú del fichero ha cambiado la marca y si lo pincho me sale una nueva opción de previsualizar. Por lo que puedo dividir la pantalla y colocar en una parte el fichero raw y en otra el previsualizado.
+Después para ayudarme escribo los comandos y pulso ctrl+space y se me autocompleta.
+Heading
+bold
+italic
+list
+link
+image
+Forma más rapída de insertar una imagen desde tu mismo repositorio https://code.visualstudio.com/assets/docs/languages/Markdown/drop-link.gif
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
 Los errores que daba el sensordht11 y la placa eran que al conectar el pin data desde el principio, no ejecutaba el codigo, así que habia ue descoectarlo hasta quie se subía el código y ya se podía enchufar de nuevo.
 
 Con el sensor y la placa finalmente funcionando, el siguiente paso era encontrar un lugar para guardar la información. Tuve que usar SQL y PHP para crear una tabla de datos en una base de datos creada en 000webhost.com. No tenía ni idea de cómo funcionaba SQL, pero encontré algunos tutoriales sencillos que me ayudaron a entenderlo un poco.
