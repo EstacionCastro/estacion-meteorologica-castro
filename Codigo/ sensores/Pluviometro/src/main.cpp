@@ -1,7 +1,7 @@
 #include <Arduino.h>
 
 
-const int SENSOR=3;
+const int SENSOR=5;
 const int umbraltiempo=300;
 volatile int ISRContador = 0;
 int contador = 0;
