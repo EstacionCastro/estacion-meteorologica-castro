@@ -72,13 +72,56 @@ void loop()
 Adafruit_BMP280 bmp; // I2C
 WiFiClient client; 
 //COLEGIO
-const char* ssid = "CENTRO";
-const char* password = "";
-// MOVIL
-//const char *ssid = "******";
-//const char *password = "**********";
+//const char* ssid = "CENTRO";
+//const char* password = "";
+const char *ssid = "Redmi";
+const char *password = "92b06030e426a";
+//const char* ssid = "MIWIFI_9E55";
+//const char* password = "HHeYKd92";
+
+//FUNCIONES aquí se declaran
+void lecturaBMP280();
+void envioDatos();
 
 
+void setup() {
+  Serial.begin(9600);
+  Serial.println(F("BMP280 Forced Mode Test."));
+
+  if (!bmp.begin()) {
+    Serial.println(F("Could not find a valid BMP280 sensor, check wiring or "
+                      "try a different address!"));
+    while (1) delay(10);
+  }
+
+  
+  bmp.setSampling(Adafruit_BMP280::MODE_FORCED,     
+                  Adafruit_BMP280::SAMPLING_X2,     
+                  Adafruit_BMP280::SAMPLING_X16,    
+                  Adafruit_BMP280::FILTER_X16,      
+                  Adafruit_BMP280::STANDBY_MS_500); 
+
+ Serial.println("Connecting to WiFi");
+  
+  WiFi.begin(ssid, password);
+  
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(100);
+    Serial.print(".");
+  }
+
+
+}
+
+void loop() {
+
+ lecturaBMP280();
+ envioDatos();
+
+
+}
+
+// aquí van las funciones
 void lecturaBMP280(){
   if (bmp.takeForcedMeasurement()) {      // must call this to wake sensor up and get new measurement data it blocks until measurement is complete
     // can now print out the new measurements
@@ -131,44 +174,4 @@ if (WiFi.status() == WL_CONNECTED){
      Serial.println("Error en la conexion WIFI");
   }
   delay(60000); //espera 60s
-}
-
-
-
-void setup() {
-  Serial.begin(9600);
-  Serial.println(F("BMP280 Forced Mode Test."));
-
-  if (!bmp.begin()) {
-    Serial.println(F("Could not find a valid BMP280 sensor, check wiring or "
-                      "try a different address!"));
-    while (1) delay(10);
-  }
-
-  
-  bmp.setSampling(Adafruit_BMP280::MODE_FORCED,     
-                  Adafruit_BMP280::SAMPLING_X2,     
-                  Adafruit_BMP280::SAMPLING_X16,    
-                  Adafruit_BMP280::FILTER_X16,      
-                  Adafruit_BMP280::STANDBY_MS_500); 
-
- Serial.println("Connecting to WiFi");
-  
-  WiFi.begin(ssid, password);
-  
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(100);
-    Serial.print(".");
-  }
-
-
-}
-
-void loop() {
-
- lecturaBMP280();
- envioDatos();
-
-
-
 }
