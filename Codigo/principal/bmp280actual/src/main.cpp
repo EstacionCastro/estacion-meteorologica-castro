@@ -63,7 +63,7 @@ void loop()
 
 
 #include <Arduino.h>
-//#include <Wifi.h> 
+#include <Wifi.h> 
 #include <HTTPClient.h>      // no es necesario introducirla solo llamarla
 #include <WiFiClient.h>
 #include <Adafruit_BMP280.h>
@@ -74,10 +74,10 @@ WiFiClient client;
 //COLEGIO
 //const char* ssid = "CENTRO";
 //const char* password = "";
-const char *ssid = "Redmi";
-const char *password = "92b06030e426a";
-//const char* ssid = "MIWIFI_9E55";
-//const char* password = "HHeYKd92";
+//const char *ssid = "Redmi";
+//const char *password = "92b06030e426a";
+const char* ssid = "MIWIFI_9E55";
+const char* password = "HHeYKd92";
 
 //FUNCIONES aquí se declaran
 void lecturaBMP280();
@@ -148,11 +148,14 @@ void envioDatos(){
 
 if (WiFi.status() == WL_CONNECTED){ 
      HTTPClient http;  // creo el objeto http
-     http.begin(client,"http://estacioncastro.000webhostapp.com/EspPost.php");
+     http.begin(client,"http://estacioncastro.000webhostapp.com/EspPost.php?");
      http.addHeader("Content-Type", "application/x-www-form-urlencoded"); // defino texto plano..
-    
-    //String datos_a_enviar = "temperatura=" + String(20) + "&presion=" + String(30);  
-    String datos_a_enviar = "temperatura=" + String(bmp.readTemperature()) + "&presion=" + String(bmp.readPressure());  
+     
+     
+     String datos_a_enviar = "temperatura=30&humedad=30&presion=30";  
+
+    //String datos_a_enviar = "temperatura=" + String(30) + "&humedad=" + String(30)+ "&presion=" + String(30);  
+   // String datos_a_enviar = "temperatura=" + String(bmp.readTemperature())+"&humedad=" + String(Temperature()) + "&presion=" + String(bmp.readPressure());  
 
      int codigo_respuesta = http.POST(datos_a_enviar);
 
