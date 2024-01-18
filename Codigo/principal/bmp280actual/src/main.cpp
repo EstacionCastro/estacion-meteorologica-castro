@@ -1,5 +1,5 @@
 
-/*
+/* 
 // INICIALMENTE COMO VOY A COMUNICARME POR I2C TENGO QUE AVERIGUAR EL DIRECCIÓN DEL SENSOR
 // en mi caso me da 0x76 y tengo que ir a la libreria en >.pio>libdeps>Adafruit BMP280 Library>Adafruit_BMP280
 // y sustituir 0x77 por 0x76
@@ -57,9 +57,9 @@ void loop()
 
   delay(5000);           // espera 5 segundos para el siguiente escaneo
 }
-   
+   */ 
 
- */
+ 
 
 
 #include <Arduino.h>
@@ -86,7 +86,7 @@ void envioDatos();
 
 void setup() {
   Serial.begin(9600);
-  Serial.println(F("BMP280 Forced Mode Test."));
+ Serial.println(F("BMP280 Forced Mode Test."));
 
   if (!bmp.begin()) {
     Serial.println(F("Could not find a valid BMP280 sensor, check wiring or "
@@ -148,14 +148,14 @@ void envioDatos(){
 
 if (WiFi.status() == WL_CONNECTED){ 
      HTTPClient http;  // creo el objeto http
-     http.begin(client,"http://estacioncastro.000webhostapp.com/EspPost.php?");
+     http.begin(client,"http://estacionjac.000webhostapp.com/EspPost.php");
      http.addHeader("Content-Type", "application/x-www-form-urlencoded"); // defino texto plano..
      
      
-     String datos_a_enviar = "temperatura=30&humedad=30&presion=30";  
+     //String datos_a_enviar = "temperatura=" +String(10);  
 
-    //String datos_a_enviar = "temperatura=" + String(30) + "&humedad=" + String(30)+ "&presion=" + String(30);  
-   // String datos_a_enviar = "temperatura=" + String(bmp.readTemperature())+"&humedad=" + String(Temperature()) + "&presion=" + String(bmp.readPressure());  
+   // String datos_a_enviar = "temperatura=" + String(30) + "&humedad=" + String(30)+ "&presion=" + String(30);  
+    String datos_a_enviar = "temperatura=" + String(bmp.readTemperature()) + "&humedad=" + String(20)+"&presion=" + String(bmp.readPressure());  
 
      int codigo_respuesta = http.POST(datos_a_enviar);
 
@@ -178,3 +178,4 @@ if (WiFi.status() == WL_CONNECTED){
   }
   delay(60000); //espera 60s
 }
+ 
