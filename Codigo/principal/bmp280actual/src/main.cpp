@@ -59,16 +59,16 @@ void loop()
 }
    */ 
 
- 
-
-
 #include <Arduino.h>
 #include <Wifi.h> 
 #include <HTTPClient.h>      // no es necesario introducirla solo llamarla
 #include <WiFiClient.h>
 #include <Adafruit_BMP280.h>
 
-
+#include <Wire.h>            // necesario para sht20
+#include <DFRobot_SHT20.h>   // necesario para sht20
+//objetos
+DFRobot_SHT20    sht20;
 Adafruit_BMP280 bmp; // I2C
 WiFiClient client; 
 //COLEGIO
@@ -76,16 +76,29 @@ WiFiClient client;
 //const char* password = "";
 //const char *ssid = "Redmi";
 //const char *password = "92b06030e426a";
-const char* ssid = "MIWIFI_9E55";
-const char* password = "HHeYKd92";
+
+// variables
+int UVsensorIn = 32; //Output from the sensor
 
 //FUNCIONES aquí se declaran
+
+void lecturaML8511();
 void lecturaBMP280();
+void lecturaSHT20();
 void envioDatos();
+
+int averageAnalogRead(int pinToRead) ;
+int averageAnalogRead(int UVsensorIn); 
+float mapfloat(float x, float in_min, float in_max, float out_min, float out_max);
+//void lecturaML8511();
 
 
 void setup() {
   Serial.begin(9600);
+ 
+ //=======ml8511=========
+ pinMode(UVsensorIn, INPUT);
+ //=======bmp280=========
  Serial.println(F("BMP280 Forced Mode Test."));
 
   if (!bmp.begin()) {
@@ -93,35 +106,54 @@ void setup() {
                       "try a different address!"));
     while (1) delay(10);
   }
-
-  
+ 
   bmp.setSampling(Adafruit_BMP280::MODE_FORCED,     
                   Adafruit_BMP280::SAMPLING_X2,     
                   Adafruit_BMP280::SAMPLING_X16,    
                   Adafruit_BMP280::FILTER_X16,      
                   Adafruit_BMP280::STANDBY_MS_500); 
-
+//=======sht20=========
+Serial.println("SHT20 Example!");                   
+    sht20.initSHT20();                                  // Init SHT20 Sensor
+    delay(10000);
+    sht20.checkSHT20();                                 // Check SHT20 Sensor
  Serial.println("Connecting to WiFi");
-  
+//=======wifi=========
+
   WiFi.begin(ssid, password);
-  
-  while (WiFi.status() != WL_CONNECTED) {
+    while (WiFi.status() != WL_CONNECTED) {
     delay(100);
     Serial.print(".");
   }
-
-
 }
 
 void loop() {
 
- lecturaBMP280();
- envioDatos();
 
+ lecturaML8511();
+ lecturaBMP280();
+ lecturaSHT20();
+ 
+
+
+ envioDatos();
 
 }
 
 // aquí van las funciones
+void lecturaML8511()
+{
+  int uvLevel = averageAnalogRead(UVsensorIn);
+ 
+  float outputVoltage = 3.3 * uvLevel/4095;
+  float uvIntensity = mapfloat(outputVoltage, 0.99, 2.9, 0.0, 15.0);
+ 
+  Serial.print(" UV Intensity: ");
+  Serial.print(uvIntensity);
+  Serial.print(" mW/cm^2"); 
+  Serial.println(); 
+  delay(200);
+}
 void lecturaBMP280(){
   if (bmp.takeForcedMeasurement()) {      // must call this to wake sensor up and get new measurement data it blocks until measurement is complete
     // can now print out the new measurements
@@ -143,6 +175,36 @@ void lecturaBMP280(){
     Serial.println("Forced measurement failed!");
   }
 }
+void lecturaSHT20()
+{
+    float humd = sht20.readHumidity();                  // Read Humidity
+    float temp = sht20.readTemperature();               // Read Temperature
+    Serial.print(" Temperature:");
+    Serial.print(temp, 1);
+    Serial.print("C");
+    Serial.print(" Humidity:");
+    Serial.print(humd, 1);
+    Serial.print("%");
+    Serial.println();
+    delay(1000);
+}
+
+float mapfloat(float x, float in_min, float in_max, float out_min, float out_max)
+{
+  return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+}
+int averageAnalogRead(int pinToRead)
+{
+  byte numberOfReadings = 8;
+  unsigned int runningValue = 0; 
+ 
+  for(int x = 0 ; x < numberOfReadings ; x++)
+    runningValue += analogRead(pinToRead);
+  runningValue /= numberOfReadings;
+ 
+  return(runningValue);  
+ 
+}
 
 void envioDatos(){
 
@@ -155,7 +217,7 @@ if (WiFi.status() == WL_CONNECTED){
      //String datos_a_enviar = "temperatura=" +String(10);  
 
    // String datos_a_enviar = "temperatura=" + String(30) + "&humedad=" + String(30)+ "&presion=" + String(30);  
-    String datos_a_enviar = "temperatura=" + String(bmp.readTemperature()) + "&humedad=" + String(20)+"&presion=" + String(bmp.readPressure());  
+    String datos_a_enviar = "temperatura=" + String(sht20.readTemperature()) + "&humedad=" + String(sht20.readHumidity())+"&presion=" + String(bmp.readPressure());  
 
      int codigo_respuesta = http.POST(datos_a_enviar);
 
@@ -179,3 +241,7 @@ if (WiFi.status() == WL_CONNECTED){
   delay(60000); //espera 60s
 }
  
+
+
+
+

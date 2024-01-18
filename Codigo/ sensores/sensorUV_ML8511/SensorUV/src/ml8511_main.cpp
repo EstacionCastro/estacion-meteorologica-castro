@@ -1,22 +1,9 @@
 #include <Arduino.h>
-#include <WiFi.h>
-#include <HTTPClient.h>
 
-// Credenciales para conectarse a la red del centro
-const char* ssid     = "CENTRO";
-const char* password = "";
-
-// Nombre del dominio y archivo a donde subir los datos
-const char* serverName = "https://ultravioletasuperestacion.000webhostapp.com/post-esp-data.php";
-
-// El archivo "post-esp-data.php" en nuestra base de datos necesita tener la misma clave de API para funcionar
-String apiKeyValue = "tPmAT5Ab3j7F9";
-String sensorName = "ML8511";
-String sensorLocation = "Home";
 
 int UVOUT = 32; // Salida de datos del sensor
 int REF_3V3 = 4; // Fuente de 3.3V del sensor
-
+int averageAnalogRead(int pinToRead);
 void setup()
 {
   // Iniciamos el serial
@@ -26,28 +13,10 @@ void setup()
   pinMode(UVOUT, INPUT);
   pinMode(REF_3V3, INPUT);
 
-  // Iniciamos todo lo relacionado con el WiFi
-  WiFi.begin(ssid, password);
-  Serial.println("Connecting");
-  while(WiFi.status() != WL_CONNECTED)
-  { 
-    delay(500);
-    Serial.print(".");
-  }
-
-  Serial.println("Conectado al WiFi");
-
-  // Pasamos al serial la direccion IP y MAC en caso de necesitarlas
-  Serial.println("Dirección IP: ");
-  Serial.print(WiFi.localIP());
-
-  Serial.println("Dirección MAC: ");
-  Serial.print(WiFi.macAddress());
-}
+  
 
 // Devuelve la media de la salida del sensor
-int averageAnalogRead(int pinToRead)
-{
+int averageAnalogRead(int pinToRead){
   byte numberOfReadings = 8;
   unsigned int runningValue = 0; 
  
@@ -99,46 +68,9 @@ int indicereturn()
   return indice;
 }
 
-int oneminute = 60000;
-void loop()
-{
-  // Solo ejecutaremos el código si estamos conectados al WiFi
-  if (WiFi.status() == WL_CONNECTED)
-  {
-    HTTPClient http;
-    
-    // Iniciamos con la url antes indicada
-    http.begin(serverName);
-    
-    // Specify content-type header
-    http.addHeader("Content-Type", "application/x-www-form-urlencoded");
-    
-    // Creamos el POST que vamos a mandar mas adelante
-    String httpRequestData = "api_key=" + apiKeyValue + "&sensor=" + sensorName
-                          + "&location=" + sensorLocation + "&value1=" + String(indicereturn());
 
-    // La pasamos al serial para poder comprobar que es correcta
-    Serial.print("httpRequestData: ");
-    Serial.println(httpRequestData);
 
-    // Mandamos el POST que hemos creado
-    int httpResponseCode = http.POST(httpRequestData);
 
-    // Pasamos el código HTTP de respuesta al serial
-    if (httpResponseCode > 0) {
-      Serial.print("HTTP Response code: ");
-      Serial.println(httpResponseCode);
-    }
-    else {
-      Serial.print("Error code: ");
-      Serial.println(httpResponseCode);
-    }
-    
-    http.end();
-
-    // Mandamos datos cada 10 minutos
-    delay(oneminute * 10); 
-  }
-  else
-    Serial.println("WiFi no conectado");
+void loop(){
+  
 }
