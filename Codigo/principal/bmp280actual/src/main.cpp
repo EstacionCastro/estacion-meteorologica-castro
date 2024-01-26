@@ -74,12 +74,13 @@ WiFiClient client;
 //COLEGIO
 //const char* ssid = "CENTRO";
 //const char* password = "";
-//const char *ssid = "Redmi";
-//const char *password = "92b06030e426a";
+const char *ssid = "Redmi";
+const char *password = "92b06030e426a";
 
-// variables
+// variables entradas/salidas
 int UVsensorIn = 32; //Output from the sensor
-
+// variables para utilizar fuera de su función
+float uvIntensity;
 //FUNCIONES aquí se declaran
 
 void lecturaML8511();
@@ -130,12 +131,9 @@ Serial.println("SHT20 Example!");
 void loop() {
 
 
- lecturaML8511();
- lecturaBMP280();
- lecturaSHT20();
- 
-
-
+ lecturaML8511(); // rayos uva
+ lecturaBMP280(); // tra,altitud,presión
+ lecturaSHT20();  // tra,humedad (elegido por tener mayor precisión)
  envioDatos();
 
 }
@@ -154,6 +152,15 @@ void lecturaML8511()
   Serial.println(); 
   delay(200);
 }
+
+
+
+
+
+
+
+
+
 void lecturaBMP280(){
   if (bmp.takeForcedMeasurement()) {      // must call this to wake sensor up and get new measurement data it blocks until measurement is complete
     // can now print out the new measurements
@@ -200,11 +207,13 @@ int averageAnalogRead(int pinToRead)
  
   for(int x = 0 ; x < numberOfReadings ; x++)
     runningValue += analogRead(pinToRead);
-  runningValue /= numberOfReadings;
+    runningValue /= numberOfReadings;
  
   return(runningValue);  
  
-}
+} 
+
+
 
 void envioDatos(){
 
@@ -217,7 +226,11 @@ if (WiFi.status() == WL_CONNECTED){
      //String datos_a_enviar = "temperatura=" +String(10);  
 
    // String datos_a_enviar = "temperatura=" + String(30) + "&humedad=" + String(30)+ "&presion=" + String(30);  
-    String datos_a_enviar = "temperatura=" + String(sht20.readTemperature()) + "&humedad=" + String(sht20.readHumidity())+"&presion=" + String(bmp.readPressure());  
+    String datos_a_enviar = "temperatura=" + String(sht20.readTemperature()) + "&humedad=" + String(sht20.readHumidity())+"&presion=" + String(bmp.readPressure())+"&uv=" + String(uvIntensity);  
+     /*  String datos_a_enviar = "temperatura=" + String(sht20.readTemperature());      
+           datos_a_enviar=+"&humedad=" + String(sht20.readHumidity());
+           datos_a_enviar=+"&presion=" + String(bmp.readPressure());
+           datos_a_enviar= +"&uv=" + String(uvIntensity);  */ // ERRORES
 
      int codigo_respuesta = http.POST(datos_a_enviar);
 
