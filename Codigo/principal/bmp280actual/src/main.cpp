@@ -72,17 +72,27 @@ DFRobot_SHT20    sht20;
 Adafruit_BMP280 bmp; // I2C
 WiFiClient client; 
 //COLEGIO
-//const char* ssid = "CENTRO";
-//const char* password = "";
-const char *ssid = "Redmi";
-const char *password = "92b06030e426a";
+const char* ssid = "CENTRO";
+const char* password = "";
 
 // variables entradas/salidas
-int UVsensorIn = 32; //Output from the sensor
+int UVsensorIn = 32; //Output from the sensor uva
 // variables para utilizar fuera de su función
 float uvIntensity;
-//FUNCIONES aquí se declaran
+// variables pluviometro
+const byte sensor=5;
+const int tiempoRebote=500;
+volatile int numVuelcos = 0;// numero de vuelcos, comienza en 0
+float litrosIntervalo=0;
+unsigned long flagVuelcos=500;
+unsigned long flagEnvio =0;
+int intervaloEnvio=20000;
 
+
+
+//FUNCIONES aquí se declaran
+void funContadorVuelcos();
+void pluviometro();
 void lecturaML8511();
 void lecturaBMP280();
 void lecturaSHT20();
@@ -96,7 +106,10 @@ float mapfloat(float x, float in_min, float in_max, float out_min, float out_max
 
 void setup() {
   Serial.begin(9600);
- 
+ //=======pluviometro====
+ pinMode(sensor, INPUT_PULLUP);
+ attachInterrupt(digitalPinToInterrupt(sensor), funContadorVuelcos, FALLING);
+   
  //=======ml8511=========
  pinMode(UVsensorIn, INPUT);
  //=======bmp280=========
@@ -131,10 +144,15 @@ Serial.println("SHT20 Example!");
 void loop() {
 
 
- lecturaML8511(); // rayos uva
- lecturaBMP280(); // tra,altitud,presión
- lecturaSHT20();  // tra,humedad (elegido por tener mayor precisión)
- envioDatos();
+ if (millis()-flagEnvio>intervaloEnvio)  // 1h=3600000 sg si el tiempo supera la hora tomo las medidas de todos los vuelcos
+  { 
+  flagEnvio=millis(); // colocarlo mejor aquí. Si lo colocas al final te va dando retrasos
+  lecturaML8511(); // rayos uva
+  lecturaBMP280(); // tra,altitud,presión
+  lecturaSHT20();  // tra,humedad (elegido por tener mayor precisión)
+  pluviometro();
+  envioDatos();
+  }
 
 }
 
@@ -150,7 +168,7 @@ void lecturaML8511()
   Serial.print(uvIntensity);
   Serial.print(" mW/cm^2"); 
   Serial.println(); 
-  delay(200);
+ // delay(200);
 }
 
 
@@ -177,7 +195,7 @@ void lecturaBMP280(){
     Serial.println(" m");
 
     Serial.println();
-    delay(2000);
+   // delay(2000);
   } else {
     Serial.println("Forced measurement failed!");
   }
@@ -193,7 +211,7 @@ void lecturaSHT20()
     Serial.print(humd, 1);
     Serial.print("%");
     Serial.println();
-    delay(1000);
+   // delay(1000);
 }
 
 float mapfloat(float x, float in_min, float in_max, float out_min, float out_max)
@@ -213,7 +231,33 @@ int averageAnalogRead(int pinToRead)
  
 } 
 
+void funContadorVuelcos(){
+  if(millis()>(flagVuelcos+tiempoRebote)){ //cuando supera el tiempo de rebote
+    numVuelcos++;                             // cuenta y guarda el resultado
+    flagVuelcos=millis();                  // prepara el contador para otra medida
+    //Serial.println(numVuelcos);// Mejor no ponerlo. Cuando se llama a un controlador de interrupciones, bloquea todo el sistema. 
+    //Por lo tanto, solo debe hacer un trabajo mínimo y regresar rápidamente. 
+    //Sin embargo, la comunicación en serie es lenta y provoca grandes retrasos
+}
+}
 
+void pluviometro(){
+     
+    litrosIntervalo=numVuelcos * 0.2794;     // lectura de litros/hora
+    //++++++++++++++++ lectura por horas +++++++++++++++++++++++++++
+    if (litrosIntervalo>0)                // si ha pasado la hora AND hay algún vuelco pongo todo a cero
+    {                                 // tanto el numVuelcos como
+    Serial.println(flagEnvio);  
+    Serial.print("litrosIntervalo por m2 caidos en una una Hora (Lm2)" );
+    Serial.println(litrosIntervalo);
+    numVuelcos= 0;
+    //flagEnvio = millis();
+    }
+    //++++++++++++++++ lectura por días +++++++++++++++++++++++++++
+
+   int litrosDia=litrosIntervalo*24; 
+
+}
 
 void envioDatos(){
 
@@ -226,7 +270,7 @@ if (WiFi.status() == WL_CONNECTED){
      //String datos_a_enviar = "temperatura=" +String(10);  
 
    // String datos_a_enviar = "temperatura=" + String(30) + "&humedad=" + String(30)+ "&presion=" + String(30);  
-    String datos_a_enviar = "temperatura=" + String(sht20.readTemperature()) + "&humedad=" + String(sht20.readHumidity())+"&presion=" + String(bmp.readPressure())+"&uv=" + String(uvIntensity);  
+    String datos_a_enviar = "temperatura=" + String(sht20.readTemperature()) + "&humedad=" + String(sht20.readHumidity())+"&presion=" + String(bmp.readPressure())+"&uv=" + String(uvIntensity)+"&lluvia=" + String(litrosIntervalo);  
      /*  String datos_a_enviar = "temperatura=" + String(sht20.readTemperature());      
            datos_a_enviar=+"&humedad=" + String(sht20.readHumidity());
            datos_a_enviar=+"&presion=" + String(bmp.readPressure());
@@ -251,7 +295,7 @@ if (WiFi.status() == WL_CONNECTED){
   } else {
      Serial.println("Error en la conexion WIFI");
   }
-  delay(60000); //espera 60s
+ // delay(60000); //espera 60s
 }
  
 
