@@ -73,12 +73,15 @@ Adafruit_BMP280 bmp; // I2C
 WiFiClient client; 
 //COLEGIO
 const char* ssid = "CENTRO";
-const char* password = "";
+//const char* password = "";
+// -----FIJAR LA IP----------
+IPAddress ip(10,200,112,25);     
+IPAddress gateway(10,200,112,1);   
+IPAddress subnet(255,255,248,0);  
 
-// variables entradas/salidas
-int UVsensorIn = 32; //Output from the sensor uva
-// variables para utilizar fuera de su función
-float uvIntensity;
+// ---- VARIABLES ----------
+int UVsensorIn = 32;  //Output from the sensor uva
+float uvIntensity;    // variables para utilizar fuera de su función
 // variables pluviometro
 const byte sensor=5;
 const int tiempoRebote=500;
@@ -101,8 +104,6 @@ void envioDatos();
 int averageAnalogRead(int pinToRead) ;
 int averageAnalogRead(int UVsensorIn); 
 float mapfloat(float x, float in_min, float in_max, float out_min, float out_max);
-//void lecturaML8511();
-
 
 void setup() {
   Serial.begin(9600);
@@ -132,13 +133,22 @@ Serial.println("SHT20 Example!");
     delay(10000);
     sht20.checkSHT20();                                 // Check SHT20 Sensor
  Serial.println("Connecting to WiFi");
-//=======wifi=========
-
-  WiFi.begin(ssid, password);
-    while (WiFi.status() != WL_CONNECTED) {
-    delay(100);
-    Serial.print(".");
+//=======WIFI conectada ip fija=========
+WiFi.mode(WIFI_STA);
+  WiFi.config(ip, gateway, subnet);
+  WiFi.begin(ssid, NULL);
+  Serial.print("Conectando a:\t");
+  Serial.println(ssid);
+  // Esperar a que nos conectemos
+  while (WiFi.status() != WL_CONNECTED) 
+  {
+  delay(200); 
+  Serial.print('.');
   }
+ // Mostrar mensaje de exito y dirección IP asignada
+  Serial.println("Conexión establecida");  
+  Serial.print("IP address:\t");
+  Serial.println(WiFi.localIP());
 }
 
 void loop() {
@@ -170,14 +180,6 @@ void lecturaML8511()
   Serial.println(); 
  // delay(200);
 }
-
-
-
-
-
-
-
-
 
 void lecturaBMP280(){
   if (bmp.takeForcedMeasurement()) {      // must call this to wake sensor up and get new measurement data it blocks until measurement is complete
