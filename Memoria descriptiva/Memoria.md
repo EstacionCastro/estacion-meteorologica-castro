@@ -20,9 +20,26 @@ La meteorología es la ciencia que estudia el estado del tiempo, el clima y las 
 * Además, lo que también queremos conseguir es ayudar a todo aquel que quiera hacer su propia estación metereológica  esté atrancado con alguna cosa, de tal modo que al ver el código y leer los problemas que hemos tenido y cómo los hemos solucionado, pueda resolver sus propios problemas o al menos tener unas pautas sobre los pasos que tiene que seguir.
 # PASOS A SEGUIR
 
+
+En primer lugar, lo más recomendado sería invertir un poco de tiempo investigando sobre los distintos sensores que hay en el mercado y realizar una tabla de sus características para compararlos según la relación calidad-precio para adquirir el sensor más conveniente.
+
+A continuación, hay que hacer los códigos, preferiblemente con visual estudio code. Yo recomiendo hacer primero los códigos de cada sensor por separado para así hacer pruebas de ellos y asegurarse de que funcionan a la perfección y que el código está bien hecho.
+
+El siguente paso sería crearse una base de datos y a los códigos creados anteriormente, modificarlos para que esos datos que captan, los envíen a la base de datos. Y una vez que esté hecho y funcionando correctamente, ya vendría la hora de fusionar los códigos de los sensores en un solo código común qque englobe todos los anteriores.
+
+Finalmente, habría que montar la estación en un lugar alto, como un tejado, para que así capte bien todos los fenómenos metereológicos de a su alrededor.
+
+
+![estacion metereologica](https://www.sevensensor.com/files/2023/06/Sensores-Meteorologicos.jpg)
+
+
+
 # MATERIALES NECESARIOS
 
 ### SENSOR TRA Y HUMEDAD
+
+![dht11](https://hetpro-store.com/TUTORIALES/wp-content/uploads/2015/03/CONEXION_DHT11.jpg)
+
 Con el sensor y la placa finalmente funcionando, el siguiente paso era encontrar un lugar para guardar la información. Tuve que usar SQL y PHP para crear una tabla de datos en una base de datos creada en 000webhost.com. No tenía ni idea de cómo funcionaba SQL, pero encontré algunos tutoriales sencillos que me ayudaron a entenderlo un poco.
 
 Después de mucha prueba y error, conseguí que la placa guardara las lecturas de humedad en la base de datos. Pero necesitaba un código que no sabía hacer para enviar esas lecturas a la base de datos. Investigué un poco más y aprendí sobre códigos de "post". Parecen raros de ver pero resulta que es como darle un papelito a la base de datos y decirle que lo guarde.
@@ -30,12 +47,12 @@ Creé una tabla en html y php para organizar las medidas y tenerlas guardadas, n
 
 Con el código "post" funcionando y la tabla hecha, tuve que subir todo lo que había hecho a GitHub. Al principio, GitHub me pareció un sitio rro de subir archivos, pero con paciencia, entendí cómo subir mis cosas allí. Ahora, cualquiera puede ver lo que hice.
 ### SENSOR PRESIÓN (BMP280)
-![bmp180](ImagenesT/bmp180.jpg)
 
+![bmp280](ImagenesT/bmp180.jpg)
 
-El BMP180 es un sensor de presión barométrica diseñado para medir la presión atmosférica y estimar la altitud sobre el nivel del mar (aunque en este código omití la parte de calcular la altura). La presión atmosférica resulta de la fuerza ejercida por la atmósfera sobre la superficie terrestre, variando con la altitud y la temperatura. En puntos más altos, la presión disminuye debido a la menor cantidad de aire. Además, la presión atmosférica se ve afectada por la temperatura, ya que esta influye en la densidad del aire, alterando su peso y, por ende, la presión.
+El BMP280 es un sensor de presión barométrica diseñado para medir la presión atmosférica y estimar la altitud sobre el nivel del mar (aunque en este código omití la parte de calcular la altura). La presión atmosférica resulta de la fuerza ejercida por la atmósfera sobre la superficie terrestre, variando con la altitud y la temperatura. En puntos más altos, la presión disminuye debido a la menor cantidad de aire. Además, la presión atmosférica se ve afectada por la temperatura, ya que esta influye en la densidad del aire, alterando su peso y, por ende, la presión.
 
-El BMP180 mide la presión absoluta y la temperatura. Al detectar la temperatura, podemos compensar su impacto en la presión, logrando una estimación más precisa de la altitud. Este sensor se alimenta directamente desde la salida de 5V de Arduino y cuenta con un diseño compacto, bajo consumo de corriente, y componentes adicionales como un regulador de voltaje, resistencias pull-up y capacitores by-pass para mejorar su rendimiento.
+El BMP280 mide la presión absoluta y la temperatura. Al detectar la temperatura, podemos compensar su impacto en la presión, logrando una estimación más precisa de la altitud. Este sensor se alimenta directamente desde la salida de 5V de Arduino y cuenta con un diseño compacto, bajo consumo de corriente, y componentes adicionales como un regulador de voltaje, resistencias pull-up y capacitores by-pass para mejorar su rendimiento.
 | Adaptador LCD a I2C | Arduino Uno, Nano, Mini. | WROVER ESP32 |
 |-----------|-----------|-----------|
 | VCC | 5V | 5V |
@@ -45,11 +62,17 @@ El BMP180 mide la presión absoluta y la temperatura. Al detectar la temperatura
 
 *En "Arduino Mega , DUE" los pines son 21,20 respectivamente y en Arduino Leonardo 3,2.
 ### SENSOR RADIACIÓN SOLAR
+
 ![Placa ESP32](https://github.com/BaiAlbert/estacion-meteorologica-castro/blob/89b71ae78ae480effb5675cff5101ddd829ffe39/Fotos/ML8511/Placa%20ESP32.jpg)
 *Placa de desarrollo ESP32 utilizada.*
 ![Sensor ML8511](https://github.com/BaiAlbert/estacion-meteorologica-castro/blob/89b71ae78ae480effb5675cff5101ddd829ffe39/Fotos/ML8511/Sensor.jpg)
 *Sensor ML8511 para la medición de datos sobre la radiación ultravioleta.*
 ![Sensor ML8511 (parte trasera)](https://github.com/BaiAlbert/estacion-meteorologica-castro/blob/89b71ae78ae480effb5675cff5101ddd829ffe39/Fotos/ML8511/Sensor%20(parte%20trasera).jpg)
+
+El módulo ML8511 es un sensor de luz ultravioleta (UV), entrega una señal de voltaje analógica que depende de la cantidad de luz UV que detecta. Sensor ideal para proyectos de monitoreo de condiciones ambientales como el índice UV, Aplicaciones Meteorológicas, cuidado de la piel, medición industrial de nivel UV.
+
+El sensor ML8511 detecta luz con una longitud de onda entre 280-390nm, este rango cubre tanto al espectro UV-B como al UV-A. La salida analógica está relacionada linealmente con la intensidad UV (mW/cm2). Esta señal analógica puede ser conectada a un microcontrolador para ser convertido por un ADC y así trabajar con la medición. 
+
 ### PLUVIÓMETRO 
 ![foto](https://encrypted-tbn3.gstatic.com/shopping?q=tbn:ANd9GcQoHQyPXPgu9GdTTlE0Vt4-ops4_vuV9VdCSpZtE3QKDyCQ9LGXIBJc8uttywQaJdxrY0MSYCR3zJXoecuadLiOtY0RNj-F6RVDw_VxP-JF1yv8DldtZNFq4qGQI02keLU6jNe_NQ&usqp=CAc)
 
@@ -69,6 +92,46 @@ Pues ya está, nos queda que los litros por metro cuadrado son la milésima part
 
 # CARACTERÍSTICAS
 (De los sensores.Medición analógica, digital,protocolo de comunicación, Tablas de características, sensibilidad, precisión)
+| Parámetros | Sensor DT11 |
+|------------|-------------|
+| Alimentación | 3Vdc ≤ Vcc ≤ 5Vdc |
+| Señal de Salida | Digital |
+| Rango de medida Temperatura | De 0 a 50 °C |
+| Precisión Temperatura | +2 °C |
+| Resolución Temperatura | 0.1°C |
+| Rango de medida Humedad | De 20% a 90% RH |
+| Precisión Humedad | 4% RH |
+| Resolución Humedad | 1%RH |
+| Tiempo de sensado | 1s |
+| Tamaño | 12 x 15.5 x 5.5mm |
+
+| Parámetros | Sensor BMP280 |
+|------------|---------------|
+| Rango de presión | 300 – 1100 hPa ± 1hPa |
+| Rango de temperatura | -40 – 85 ºC ± 1,0 ºC |
+| Nivel lógico | 3,3V |
+| Consumo | 2,7 µA |
+| Comunicación | I2C, SPI |
+
+| Parámetros | Sensor ML8511 |
+|-------------|-------------|
+| Voltaje de alimentación | 3.V-5V DC |
+| Salida de voltaje analógica lineal | de 1V a 3V |
+| Longitud de onda | 280-390nm |
+| Longitud de onda pico | 365nm |
+| Consumo de energía | ultrabajo |
+| Dimensiones | 12*12mm |
+| Peso | 2 gramos |
+
+| Parámetros | Pluviómetro (sensor KY-025) |
+|------------|-------------|
+| Voltaje de trabajo | 3.3V - 5V |
+| Salida digital  | activa a nivel bajo |
+| Salida analógica | Indica la intensidad del campo |
+| Tamaño | 3.2 x 1.9 x 0.7 cm |
+| Peso | 4 gramos |
+
+
 
 # MONTAJE Y ESQUEMAS DEL CONJUNTO
 1. ESQUEMAS
@@ -611,22 +674,28 @@ if (WiFi.status() == WL_CONNECTED){
 
 
 # INTERPRETACIÓN DE DATOS
-NIVEL DE CLIMATIZACIÓN:
+**NIVEL DE CLIMATIZACIÓN:**
 Una humedad igual o inferior al 40%
 Una humedad igual o superior al 70%
 Una humedad superior al 40% pero inferior al 70%; al mismo tiempo la temperatura actual es superior a 20°C (68°F) pero inferior a 27°C (80.6°F).
 
-AVISO DE HELADAS:
+A**VISO DE HELADAS:**
 Si el aviso de heladas se encuentra activo y la temperatura exterior se
 encuentra entre -1,0 y +2,9 °C (+30,2 y 37,3 °F) suena una alarma durante
 unos 5 segundos y parpadea el símbolo
 
-LLUVIA:
+
+
+**LLUVIA:**
+
 La lluvia se mide en litros por metro cuadrado o en milímetros, que llega a ser lo mismo, y depende también del tiempo en el que cae, que en este caso estaremos midiendo cuántos litros por metro cuadrado cae de lluvia cada hora. Dependiendo de la intensidad de la lluvia, ésta puede ser débil, moderada, fuerte, etc.
 
 ![tabla](https://www.meteolobios.es/jpg/39f519045dbe8584fc2c6586432d0d2fo.jpg)
 
-ÍNDICE ULTRAVIOLETA:
+
+
+**ÍNDICE ULTRAVIOLETA:**
+
 El ML8511 trabaja usando una especie de sensor sensible a la luz que funciona de la siguiente manera:
 > **+ Luz = + Voltaje = + Valor analógico**
 
