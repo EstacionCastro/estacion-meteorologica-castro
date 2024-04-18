@@ -38,7 +38,7 @@ Finalmente, habría que montar la estación en un lugar alto, como un tejado, pa
 
 ### SENSOR TRA Y HUMEDAD
 
-![dht11](https://https://github.com/sandragarayalde/sandra_fork/blob/main/Fotos/IMG_20231218_074419.jpg)
+![dht11](https://github.com/EstacionCastro/estacion-meteorologica-castro/blob/main/Fotos/IMG_20231218_074419.jpg)
 
 Con el sensor y la placa finalmente funcionando, el siguiente paso era encontrar un lugar para guardar la información. Tuve que usar SQL y PHP para crear una tabla de datos en una base de datos creada en 000webhost.com. No tenía ni idea de cómo funcionaba SQL, pero encontré algunos tutoriales sencillos que me ayudaron a entenderlo un poco.
 
