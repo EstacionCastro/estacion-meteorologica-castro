@@ -38,7 +38,7 @@ Finalmente, habría que montar la estación en un lugar alto, como un tejado, pa
 
 ### SENSOR TRA Y HUMEDAD
 
-![dht11](https://hetpro-store.com/TUTORIALES/wp-content/uploads/2015/03/CONEXION_DHT11.jpg)
+![dht11](https://https://github.com/sandragarayalde/sandra_fork/blob/main/Fotos/IMG_20231218_074419.jpg)
 
 Con el sensor y la placa finalmente funcionando, el siguiente paso era encontrar un lugar para guardar la información. Tuve que usar SQL y PHP para crear una tabla de datos en una base de datos creada en 000webhost.com. No tenía ni idea de cómo funcionaba SQL, pero encontré algunos tutoriales sencillos que me ayudaron a entenderlo un poco.
 
@@ -47,8 +47,6 @@ Creé una tabla en html y php para organizar las medidas y tenerlas guardadas, n
 
 Con el código "post" funcionando y la tabla hecha, tuve que subir todo lo que había hecho a GitHub. Al principio, GitHub me pareció un sitio rro de subir archivos, pero con paciencia, entendí cómo subir mis cosas allí. Ahora, cualquiera puede ver lo que hice.
 ### SENSOR PRESIÓN (BMP280)
-
-![bmp280](ImagenesT/bmp180.jpg)
 
 El BMP280 es un sensor de presión barométrica diseñado para medir la presión atmosférica y estimar la altitud sobre el nivel del mar (aunque en este código omití la parte de calcular la altura). La presión atmosférica resulta de la fuerza ejercida por la atmósfera sobre la superficie terrestre, variando con la altitud y la temperatura. En puntos más altos, la presión disminuye debido a la menor cantidad de aire. Además, la presión atmosférica se ve afectada por la temperatura, ya que esta influye en la densidad del aire, alterando su peso y, por ende, la presión.
 
