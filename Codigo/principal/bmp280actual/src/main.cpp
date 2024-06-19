@@ -1,5 +1,5 @@
 
-/* 
+/*
 // INICIALMENTE COMO VOY A COMUNICARME POR I2C TENGO QUE AVERIGUAR EL DIRECCIÓN DEL SENSOR
 // en mi caso me da 0x76 y tengo que ir a la libreria en >.pio>libdeps>Adafruit BMP280 Library>Adafruit_BMP280
 // y sustituir 0x77 por 0x76
@@ -57,7 +57,7 @@ void loop()
 
   delay(5000);           // espera 5 segundos para el siguiente escaneo
 }
-   */ 
+   */
 
 #include <Arduino.h>
 #include <Wifi.h> 
@@ -80,6 +80,7 @@ IPAddress gateway(10,200,112,1);
 IPAddress subnet(255,255,248,0);  
 
 // ---- VARIABLES ----------
+String IdEstacion = "Ies-Juan_A_Castro";
 int UVsensorIn = 32;  //Output from the sensor uva
 float uvIntensity;    // variables para utilizar fuera de su función
 // variables pluviometro
@@ -99,7 +100,7 @@ void pluviometro();
 void lecturaML8511();
 void lecturaBMP280();
 void lecturaSHT20();
-void envioDatos();
+void envioDatoscastro();
 
 int averageAnalogRead(int pinToRead) ;
 int averageAnalogRead(int UVsensorIn); 
@@ -161,7 +162,7 @@ void loop() {
   lecturaBMP280(); // tra,altitud,presión
   lecturaSHT20();  // tra,humedad (elegido por tener mayor precisión)
   pluviometro();
-  envioDatos();
+  envioDatoscastro();
   }
 
 }
@@ -261,7 +262,7 @@ void pluviometro(){
 
 }
 
-void envioDatos(){
+void envioDatoscastro(){
 
 if (WiFi.status() == WL_CONNECTED){ 
      HTTPClient http;  // creo el objeto http
@@ -300,6 +301,44 @@ if (WiFi.status() == WL_CONNECTED){
  // delay(60000); //espera 60s
 }
  
+ void envioDatosescuelaCaminos_CR(){
+
+if (WiFi.status() == WL_CONNECTED){ 
+     HTTPClient http;  // creo el objeto http
+     http.begin(client,"http://estacionjac.000webhostapp.com/EspPost.php");
+     http.addHeader("Content-Type", "application/x-www-form-urlencoded"); // defino texto plano..
+     
+     
+     //String datos_a_enviar = "temperatura=" +String(10);  
+
+   // String datos_a_enviar = "temperatura=" + String(30) + "&humedad=" + String(30)+ "&presion=" + String(30);  
+    String datos_a_enviar = "temperatura=" + String(sht20.readTemperature()) + "&humedad=" + String(sht20.readHumidity())+"&presion=" + String(bmp.readPressure())+"&uv=" + String(uvIntensity)+"&lluvia=" + String(litrosIntervalo);  
+     /*  String datos_a_enviar = "temperatura=" + String(sht20.readTemperature());      
+           datos_a_enviar=+"&humedad=" + String(sht20.readHumidity());
+           datos_a_enviar=+"&presion=" + String(bmp.readPressure());
+           datos_a_enviar= +"&uv=" + String(uvIntensity);  */ // ERRORES
+
+     int codigo_respuesta = http.POST(datos_a_enviar);
+
+     if (codigo_respuesta>0){
+      Serial.println("Código HTTP: "+ String(codigo_respuesta));
+        if (codigo_respuesta == 200){
+          String cuerpo_respuesta = http.getString();
+          Serial.println("El servidor respondió: ");
+          Serial.println(cuerpo_respuesta);
+        }
+     } else {
+        Serial.print("Error enviado POST, código: ");
+        Serial.println(codigo_respuesta);
+     }
+
+       http.end();  // libero recursos
+       
+  } else {
+     Serial.println("Error en la conexion WIFI");
+  }
+ // delay(60000); //espera 60s
+}
 
 
 
