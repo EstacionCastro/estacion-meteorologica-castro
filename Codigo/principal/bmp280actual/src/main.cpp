@@ -71,13 +71,15 @@ void loop()
 DFRobot_SHT20    sht20;
 Adafruit_BMP280 bmp; // I2C
 WiFiClient client; 
+
 //COLEGIO
 const char* ssid = "CENTRO";
 //const char* password = "";
 // -----FIJAR LA IP----------
 IPAddress ip(10,200,112,25);     
 IPAddress gateway(10,200,112,1);   
-IPAddress subnet(255,255,248,0);  
+IPAddress subnet(255,255,248,0); 
+IPAddress dns(8,8,8,8) ;
 
 // ---- VARIABLES ----------
 String IdEstacion = "Ies-Juan_A_Castro";
@@ -136,7 +138,7 @@ Serial.println("SHT20 Example!");
  Serial.println("Connecting to WiFi");
 //=======WIFI conectada ip fija=========
 WiFi.mode(WIFI_STA);
-  WiFi.config(ip, gateway, subnet);
+  WiFi.config(ip, gateway, subnet,dns);
   WiFi.begin(ssid, NULL);
   Serial.print("Conectando a:\t");
   Serial.println(ssid);
@@ -151,7 +153,7 @@ WiFi.mode(WIFI_STA);
   Serial.print("IP address:\t");
   Serial.println(WiFi.localIP());
 }
-
+///////////////////////////// LOOP ///////////////////////////////////
 void loop() {
 
 
@@ -159,7 +161,7 @@ void loop() {
   { 
   flagEnvio=millis(); // colocarlo mejor aquí. Si lo colocas al final te va dando retrasos
   lecturaML8511(); // rayos uva
-  lecturaBMP280(); // tra,altitud,presión
+  lecturaBMP280(); // tra,presión,altitud
   lecturaSHT20();  // tra,humedad (elegido por tener mayor precisión)
   pluviometro();
   envioDatoscastro();
@@ -266,19 +268,17 @@ void envioDatoscastro(){
 
 if (WiFi.status() == WL_CONNECTED){ 
      HTTPClient http;  // creo el objeto http
-     http.begin(client,"http://estacionjac.000webhostapp.com/EspPost.php");
+     //http.begin(client,"http://estacionjac.000webhostapp.com/EspPost.php");
+     http.begin(client,"http://estacionjac.atwebpages.com/public_html/EspPost.php?");
      http.addHeader("Content-Type", "application/x-www-form-urlencoded"); // defino texto plano..
      
      
      //String datos_a_enviar = "temperatura=" +String(10);  
 
-   // String datos_a_enviar = "temperatura=" + String(30) + "&humedad=" + String(30)+ "&presion=" + String(30);  
+    //String datos_a_enviar = "temperatura=" + String(30) + "&presion=" + String(30)+ "&humedad=" + String(30)+"&uv=" + String(45)+"&lluvia=" + String(2);  
     String datos_a_enviar = "temperatura=" + String(sht20.readTemperature()) + "&humedad=" + String(sht20.readHumidity())+"&presion=" + String(bmp.readPressure())+"&uv=" + String(uvIntensity)+"&lluvia=" + String(litrosIntervalo);  
-     /*  String datos_a_enviar = "temperatura=" + String(sht20.readTemperature());      
-           datos_a_enviar=+"&humedad=" + String(sht20.readHumidity());
-           datos_a_enviar=+"&presion=" + String(bmp.readPressure());
-           datos_a_enviar= +"&uv=" + String(uvIntensity);  */ // ERRORES
-
+     
+    Serial.println(datos_a_enviar);
      int codigo_respuesta = http.POST(datos_a_enviar);
 
      if (codigo_respuesta>0){
@@ -300,7 +300,7 @@ if (WiFi.status() == WL_CONNECTED){
   }
  // delay(60000); //espera 60s
 }
- 
+ /*
  void envioDatosescuelaCaminos_CR(){
 
 if (WiFi.status() == WL_CONNECTED){ 
@@ -313,10 +313,7 @@ if (WiFi.status() == WL_CONNECTED){
 
    // String datos_a_enviar = "temperatura=" + String(30) + "&humedad=" + String(30)+ "&presion=" + String(30);  
     String datos_a_enviar = "temperatura=" + String(sht20.readTemperature()) + "&humedad=" + String(sht20.readHumidity())+"&presion=" + String(bmp.readPressure())+"&uv=" + String(uvIntensity)+"&lluvia=" + String(litrosIntervalo);  
-     /*  String datos_a_enviar = "temperatura=" + String(sht20.readTemperature());      
-           datos_a_enviar=+"&humedad=" + String(sht20.readHumidity());
-           datos_a_enviar=+"&presion=" + String(bmp.readPressure());
-           datos_a_enviar= +"&uv=" + String(uvIntensity);  */ // ERRORES
+     
 
      int codigo_respuesta = http.POST(datos_a_enviar);
 
@@ -339,7 +336,7 @@ if (WiFi.status() == WL_CONNECTED){
   }
  // delay(60000); //espera 60s
 }
-
+*/
 
 
 
